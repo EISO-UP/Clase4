@@ -1,65 +1,85 @@
-let {userData} = require('../models/database')
+const { restart } = require("nodemon");
+const {userData} = require('../models/database')
 
 const getData = async (req, res) => {
-    try{
-        const {params:{ id }} = req;
-        const obtener = userData.find(e => e.id == id);
+    
+    const {params:{ id }} = req;
+    const obtener = userData.find(e => e.id == id);
+    const{
+        firstName,
+        lastName,
+        maidenName,
+        email,
+        age,
+        address,
+        company
+    } = obtener;
 
-        res,send({
-            status: 200,
-            user:{
-                fullName: obtener.firstName.stringValue + obtener.lastName.stringValue + obtener.maidenName.stringValue,
-                email: obtener.email.stringValue,
-                age: obtener.age.intValue,
-                adress: {
-                    adress:obtener.adress.stringValue,
-                    city:obtener.city.stringValue,
-                    coordinates: {
-                        lat: obtener.lat.intValue,
-                        lng: obtener.lng.intValue
-                    },
-                    postalcode: obtener.postalcode.stringValue,
-                    state:obtener.state.stringValue
-                },
-                jobTitle:obtener.jobTitle.stringValue
-            }
+    res.send({
+        status: 200,
+        user:{
+            fullName: `${firstName} ${lastName} ${maidenName}`,
+            email,
+            age,
+            address,
+            jobTitle:company.title
+        }
             
-        })
-    }catch (error){
-        res.send(error);
-    }
+    })
+    
 }
 
 const updateData = async (req, res) => {
-    try{
-        const {params:{ id }} = req;
-        const mapeo = useState.map(id);
-
-        const resp = await useState.map({
-            firstName,
-            lastName,
-            maidenName,
-            email,
-            age,
-            adress,
-            city,
-            lat,
-            lng,
-            postalcode,
-            state,
-            jobTitle
-        })
-        res.send({
-            status: 200,
-            id
-        });
-    }catch (error){
-        res.send(error);
-    }
+    
+    const {params:{ id }, body: newAddress} = req;
+    const obtener = userData.find(e => e.id == id);
+    const user = {...obtener, address: newAddress};
+    res.send({
+        status: 200,
+        user
+    });
+    
 } 
 
+const createUser = async (req, res) => {
+    
+    const { body:user } = req;
+    await userData.push(user,id);
+    res.send({
+        status: 200,
+        userData
+    });
+    
+}
+
+const deleteUser = async (req, res) => {
+    
+    const {params:{ id }} = req;
+    const obtener = userData.find(e => e.id == id);
+    userData.splice(obtener,1);
+    res.send({
+        status: 200,
+        userData
+    });
+   
+}
+
+/* Crear get create-user body {
+    email: dfdsagsd
+}
+respuesta
+lista de todos los usuarios {
+    {id, email}
+}*/
+/* delete delete-user/:id
+lista de todos los usuarios {
+    {id, email}
+}
+*/
 
 module.exports = {
     getData,
-    updateData
+    updateData,
+    createUser,
+    deleteUser
 }
