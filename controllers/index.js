@@ -44,7 +44,8 @@ const updateData = async (req, res) => {
 const createUser = async (req, res) => {
     
     const { body:user } = req;
-    await userData.push(user,id);
+    await userData.push(user);
+
     res.send({
         status: 200,
         userData
@@ -56,10 +57,15 @@ const deleteUser = async (req, res) => {
     
     const {params:{ id }} = req;
     const obtener = userData.find(e => e.id == id);
+    const imprimir = userData.find(o => o.id != id);
     userData.splice(obtener,1);
+    const {
+        email
+    } = imprimir
     res.send({
         status: 200,
-        userData
+        id: imprimir.id,
+        email
     });
    
 }
